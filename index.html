@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Glo · Misfits proposal</title>
+<meta name="description" content="Glo: the pet that wants you to have fun.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..700&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#0C0918;overflow:hidden;-webkit-text-size-adjust:100%}
+#wrap{position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;contain:strict}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+#stage section{position:absolute;left:0;top:0;width:1920px;height:1080px;box-sizing:border-box;overflow:hidden}
+#stage section[hidden]{display:none!important}
+#stage section>:not(.bg):not(.foot){position:relative}
+h1,h2,h3,p{margin:0}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:0.35em 0.6em;border-bottom:1px solid rgba(127,120,140,0.25)}
+th{font-weight:700}
+.foot .pg::before{content:none!important}
+#nav{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;font:600 13px/1 -apple-system,system-ui,sans-serif;color:#C3BBDF;z-index:5}
+#nav button{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);color:#F6F1EA;border-radius:999px;width:36px;height:36px;font-size:16px;cursor:pointer}
+#hint{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);font:500 13px -apple-system,system-ui,sans-serif;color:#948CB6;z-index:5;transition:opacity .6s}
+@media (max-width:760px){#hint{display:none}}
+#rot{display:none;position:fixed;left:0;right:0;top:max(24px,env(safe-area-inset-top));text-align:center;font:500 14px -apple-system,system-ui,sans-serif;color:#948CB6;z-index:5}
+@media (orientation:portrait) and (max-width:760px){#rot{display:block}}
+@media (prefers-reduced-motion: reduce){#stage *{animation:none!important;transition:none!important}}
+:root{--bg:#0C0918;--ink:#F6F1EA;--soft:#C3BBDF;--dim:#948CB6;--pink:#FF8FD0;--hot:#FF2EA6;--gold:#FFC83D;--glass:rgba(255,255,255,0.05);--edge:rgba(255,255,255,0.11);--ring:#2A2450;}
+body{font-family:'DM Sans',Arial,sans-serif;}
+section{padding:128px 128px 160px;background:var(--bg);color:var(--ink);font-family:'DM Sans',Arial,sans-serif;counter-increment:page;display:flex;flex-direction:column;}
+.bg{position:absolute;left:0px;top:0px;width:1920px;height:1080px;object-fit:cover;}
+h1,h2,h3{font-family:'Sora',Verdana,sans-serif;font-weight:600;color:var(--ink);}
+h1{font-size:112px;line-height:1.02;letter-spacing:-3px;}
+h2{font-size:64px;line-height:1.08;letter-spacing:-1.5px;}
+h3{font-size:36px;line-height:1.15;letter-spacing:-0.5px;}
+p{font-size:28px;line-height:1.45;}
+.eyebrow{font-size:24px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--pink);margin-bottom:20px;}
+.lead{font-size:32px;line-height:1.4;color:var(--soft);}
+.body{font-size:26px;line-height:1.45;color:var(--soft);}
+.foot{position:absolute;left:128px;bottom:64px;width:1664px;display:flex;justify-content:space-between;}
+.foot .ft{font-size:24px;line-height:1.2;color:var(--dim);}
+.foot .pg::before{content:counter(page);}
+
+.cols{display:flex;gap:56px;margin-top:48px;}
+.col{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0;}
+.art{height:300px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:12px;}
+.glass{background:var(--glass);border:1px solid var(--edge);border-radius:28px;padding:36px;display:flex;flex-direction:column;gap:12px;}
+.tag{font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+.quote{font-family:'Sora',Verdana,sans-serif;font-size:36px;line-height:1.2;font-weight:500;color:var(--ink);}
+.k{color:var(--ink);font-weight:700;}
+.tail{display:flex;align-items:center;gap:14px;}
+.tail .dot{width:16px;height:16px;border-radius:8px;flex:none;}
+.tail .tl{font-size:26px;line-height:1.3;color:var(--soft);}
+.num{font-family:'Sora',Verdana,sans-serif;font-size:40px;font-weight:600;color:var(--gold);width:56px;flex:none;line-height:1.1;}
+.item{display:flex;gap:20px;align-items:flex-start;padding:20px 0;border-top:1px solid var(--edge);}
+.item .ix{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;}
+
+@keyframes rise{from{opacity:0;transform:translateY(32px);}}
+@keyframes pop{from{opacity:0;transform:scale(0.92);}}
+@keyframes drift{to{transform:translateY(-16px);}}
+.in{animation:rise 700ms cubic-bezier(0.2,0.7,0.2,1) both;animation-delay:calc(var(--i,0) * 110ms);}
+.popin{animation:pop 800ms cubic-bezier(0.2,0.7,0.2,1) both;animation-delay:calc(var(--i,0) * 110ms);}
+.float{animation:pop 800ms cubic-bezier(0.2,0.7,0.2,1) both,drift 3.2s ease-in-out 900ms infinite alternate;}
+
+/* Neutral "how we got here" section */
+section.neutral{background:#F4F3EF;color:#1B1A22;}
+.neutral h1,.neutral h2,.neutral h3{color:#1B1A22;}
+.neutral .eyebrow{color:#5B5770;}
+.neutral .body,.neutral .lead{color:#55525F;}
+.neutral .foot .ft{color:#77738A;}
+.neutral .k{color:#1B1A22;}
+.ncard{background:#FFFFFF;border:1px solid #E2DED6;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:10px;}
+.nlabel{font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#6E6A7C;}
+.nbig{font-family:'Sora',Verdana,sans-serif;font-size:56px;line-height:1.1;font-weight:600;color:#1B1A22;}
+.nnum{font-family:'Sora',Verdana,sans-serif;font-size:32px;font-weight:600;color:#6E6A7C;width:48px;flex:none;line-height:1.2;}
+.nrow{display:flex;gap:20px;align-items:flex-start;padding:22px 0;border-top:1px solid #DDD9D0;}
+.nrow .ix{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
+.mx{font-size:26px;color:#1B1A22;}
+.mx .hd{background:#E7E4DC;}
+.mx .rec{background:#E6E1F2;}
+.mx .goal{background:#FFFFFF;}
+
+</style></head><body>
+<div id="wrap"><div id="stage">
+<section hidden id="n-goal" class="neutral">
+<p class="eyebrow in" style="--i:0">How we got here · The goal</p>
+<h2 class="in" style="--i:1">Add fun to people’s mundane lives</h2>
+<p class="lead in" style="--i:1;margin-top:20px;width:1300px">That is the Misfits vision. We asked what a wearable could do for it.</p>
+<div class="cols" style="margin-top:48px">
+<div class="ncard in" style="--i:2"><p class="nlabel">Goal 1</p><h3>Fuel and fun for social lives</h3><p class="body">A wearable that gets people out, and makes time with friends more fun.</p></div>
+<div class="ncard in" style="--i:2"><p class="nlabel">Goal 2</p><h3>Braggable and premium</h3><p class="body">A wearable that shows you are more expressive and fun, and that people want to be seen with.</p></div>
+</div>
+<div class="cols in" style="--i:3;margin-top:40px">
+<div class="col"><p class="nlabel">Who it’s for</p><p class="nbig">18–25</p></div>
+<div class="col"><p class="nlabel">Where we start</p><p class="nbig">Tier-1 cities</p></div>
+<div class="col"><p class="nlabel">How we measure success</p><p class="nbig">Units sold</p></div>
+</div>
+<div class="foot"><p class="ft">Misfits · Wearable proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="n-principles" class="neutral">
+<p class="eyebrow in" style="--i:0">How we got here · Principles</p>
+<h2 class="in" style="--i:1">The principles we judged every option against</h2>
+<p class="nlabel in" style="--i:1;margin-top:44px">Primary</p>
+<div class="cols in" style="--i:2;margin-top:16px">
+<div class="ncard"><h3>Visible</h3><p class="body">Worn where people see it, so it is braggable by default.</p></div>
+<div class="ncard"><h3>Expressive</h3><p class="body">It shows feeling in the moment, louder than you would.</p></div>
+<div class="ncard"><h3>Wear it and forget it</h3><p class="body">Put it on and live your life. Nothing to manage.</p></div>
+</div>
+<p class="nlabel in" style="--i:3;margin-top:44px">Secondary</p>
+<div class="cols in" style="--i:3;margin-top:8px;gap:40px">
+<div class="nrow" style="flex:1"><div class="ix"><p class="k" style="font-size:28px">Affordable</p><p class="body">Priced for 18–25.</p></div></div>
+<div class="nrow" style="flex:1"><div class="ix"><p class="k" style="font-size:28px">Social, not solitary</p><p class="body">Better with friends.</p></div></div>
+<div class="nrow" style="flex:1"><div class="ix"><p class="k" style="font-size:28px">Privacy-first</p><p class="body">Trusted around others.</p></div></div>
+<div class="nrow" style="flex:1"><div class="ix"><p class="k" style="font-size:28px">Low energy</p><p class="body">Rarely needs charging.</p></div></div>
+</div>
+<div class="foot"><p class="ft">Misfits · Wearable proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="n-market" class="neutral">
+<p class="eyebrow in" style="--i:0">How we got here · What’s out there</p>
+<h2 class="in" style="--i:1">Nothing on the market meets all three</h2>
+<table class="mx in" style="--i:2;margin-top:32px">
+<tr class="hd"><th style="width:24%">Product</th><th style="width:13%">Visible</th><th style="width:13%">Expressive</th><th style="width:16%">Wear and forget</th><th style="width:13%">Social</th><th style="width:21%">Knows your plans</th></tr>
+<tr><td>Meta Muse Charm</td><td>Yes</td><td style="color:#4E4B5C">Partly</td><td style="color:#4E4B5C">Partly</td><td style="color:#77738A">No</td><td style="color:#77738A">No</td></tr>
+<tr><td>Tamagotchi Uni</td><td style="color:#4E4B5C">Partly</td><td style="color:#4E4B5C">Partly</td><td style="color:#77738A">No</td><td style="color:#4E4B5C">Partly</td><td style="color:#77738A">No</td></tr>
+<tr><td>Sweekar</td><td style="color:#4E4B5C">Partly</td><td>Yes</td><td style="color:#4E4B5C">Partly</td><td style="color:#77738A">No</td><td style="color:#77738A">No</td></tr>
+<tr><td>Casio Moflin</td><td style="color:#77738A">No</td><td>Yes</td><td style="color:#77738A">No</td><td style="color:#77738A">No</td><td style="color:#77738A">No</td></tr>
+<tr><td>Eilik</td><td style="color:#77738A">No</td><td>Yes</td><td style="color:#77738A">No</td><td style="color:#4E4B5C">Partly</td><td style="color:#77738A">No</td></tr>
+<tr><td>Ropet</td><td style="color:#77738A">No</td><td>Yes</td><td style="color:#77738A">No</td><td style="color:#77738A">No</td><td style="color:#77738A">No</td></tr>
+<tr class="rec"><td>What we set out to build</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+</table>
+<div class="cols in" style="--i:3;margin-top:28px">
+<div class="col"><p class="nlabel">Pop Mart revenue, 2024</p><p class="nbig">$1.8 billion</p><p class="body">Driven by the Labubu bag-charm craze.</p></div>
+<div class="col"><p class="nlabel">Bag-charm market by 2030</p><p class="nbig">Over $1 billion</p><p class="body">Analyst estimate: the charm outlasted the craze.</p></div>
+</div>
+<div class="foot"><p class="ft">Team assessment from public coverage. Figures: TechCrunch, Sept 2026.</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="n-forms" class="neutral">
+<p class="eyebrow in" style="--i:0">How we got here · Form factor</p>
+<h2 class="in" style="--i:1">Five form factors, one recommendation</h2>
+<table class="mx in" style="--i:2;margin-top:44px;font-size:26px">
+<tr class="hd"><th style="width:19%">Option</th><th style="width:10%">Visible</th><th style="width:11%">Expressive</th><th style="width:11%">Wear and forget</th><th style="width:10%">Premium</th><th style="width:10%">Affordable</th><th style="width:9%">Energy</th><th style="width:20%">Verdict</th></tr>
+<tr class="rec"><td>Charm or clip-on</td><td>High</td><td>High</td><td style="color:#4E4B5C">Medium</td><td>High</td><td style="color:#4E4B5C">Medium</td><td style="color:#4E4B5C">Medium</td><td>Recommended</td></tr>
+<tr><td>Ring</td><td style="color:#4E4B5C">Medium</td><td style="color:#77738A">Low</td><td>High</td><td>High</td><td style="color:#4E4B5C">Medium</td><td>High</td><td>Close second</td></tr>
+<tr><td>Locket</td><td>High</td><td>High</td><td>High</td><td>High</td><td style="color:#77738A">Low</td><td style="color:#77738A">Low</td><td style="color:#4E4B5C">Not now</td></tr>
+<tr><td>Wristband</td><td style="color:#77738A">Low</td><td style="color:#77738A">Low</td><td>High</td><td style="color:#77738A">Low</td><td>High</td><td>High</td><td style="color:#4E4B5C">Not now</td></tr>
+<tr><td>App only</td><td style="color:#77738A">Low</td><td style="color:#4E4B5C">Medium</td><td style="color:#77738A">Low</td><td style="color:#77738A">Low</td><td>High</td><td>High</td><td style="color:#4E4B5C">Ruled out</td></tr>
+</table>
+<p class="body in" style="--i:3;margin-top:32px;width:1500px">Energy means how rarely it needs charging. <span class="k">Why:</span> the charm shows the full pet and is buildable now. The ring is premium and effortless, but shows mood only as light. A screen and battery in a pendant is out of reach for a first product. The wristband loses the wrist to the watch. An app alone is never seen.</p>
+<div class="foot"><p class="ft">Team assessment · Misfits · Wearable proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="n-pet" class="neutral">
+<p class="eyebrow in" style="--i:0">How we got here · The character</p>
+<h2 class="in" style="--i:1">What we wanted in the character</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:48px">
+<div class="ncard in" style="--i:1"><p class="nlabel">01</p><h3>Emotes strongly</h3><p class="body">Big, readable reactions you can see across a table.</p></div>
+<div class="ncard in" style="--i:1"><p class="nlabel">02</p><h3>Customisable</h3><p class="body">Your colours, style and gear, so no two look alike.</p></div>
+<div class="ncard in" style="--i:2"><p class="nlabel">03</p><h3>Independent</h3><p class="body">Its own personality and moods, not a mirror of you.</p></div>
+<div class="ncard in" style="--i:2"><p class="nlabel">04</p><h3>Intelligent</h3><p class="body">It knows your plans, your people and the moment.</p></div>
+<div class="ncard in" style="--i:3"><p class="nlabel">05</p><h3>Energetic</h3><p class="body">It wants to go out, and nudges you when you don’t.</p></div>
+<div class="ncard in" style="--i:3"><p class="nlabel">06</p><h3>Yours to look after</h3><p class="body">It grows when you show up for your friends.</p></div>
+</div>
+<div class="foot"><p class="ft">Misfits · Wearable proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="n-petvsyou" class="neutral">
+<p class="eyebrow in" style="--i:0">How we got here · Pet or avatar</p>
+<h2 class="in" style="--i:1">Why a pet, not an avatar of you</h2>
+<table class="mx in" style="--i:2;margin-top:44px">
+<tr class="hd"><th style="width:22%"> </th><th style="width:39%">An avatar of you</th><th style="width:39%">A pet that’s yours</th></tr>
+<tr><td>Over-reacting</td><td style="color:#4E4B5C">Embarrassing: it’s you blushing</td><td>Funny: it’s your pet blushing</td></tr>
+<tr><td>Personality</td><td style="color:#4E4B5C">A mirror of you</td><td>Its own moods, so it feels alive</td></tr>
+<tr><td>Care</td><td style="color:#4E4B5C">Nothing to look after</td><td>It needs you to go out</td></tr>
+<tr><td>On a tiny screen</td><td style="color:#4E4B5C">Hard to make it look like you</td><td>One character, readable anywhere</td></tr>
+<tr><td>Expressing you</td><td style="color:#4E4B5C">Through your likeness</td><td>Through its colours, style and gear</td></tr>
+</table>
+<p class="lead in" style="--i:3;margin-top:40px;width:1400px">A pet can be louder than you without speaking for you, and it still shows who you are.</p>
+<div class="foot"><p class="ft">Misfits · Wearable proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="n-choice" class="neutral" data-transition="fade">
+<p class="eyebrow in" style="--i:0">How we got here · Where we landed</p>
+<h2 class="in" style="--i:1">So we set out to build</h2>
+<div style="display:flex;flex-direction:column;margin-top:44px;width:1400px">
+<div class="nrow in" style="--i:1"><p class="nnum">1</p><div class="ix"><h3>A charm you clip on</h3><p class="body">Visible on a bag or belt, with the ring as a close second.</p></div></div>
+<div class="nrow in" style="--i:2"><p class="nnum">2</p><div class="ix"><h3>A cool, expressive pet with its own personality</h3><p class="body">Customisable, independent, and louder than you.</p></div></div>
+<div class="nrow in" style="--i:3"><p class="nnum">3</p><div class="ix"><h3>Fed by real-life hangouts</h3><p class="body">It grows when you go out, and knows your plans through Misfits.</p></div></div>
+</div>
+<p class="in" style="--i:3;margin-top:48px;font-family:'Sora',Verdana,sans-serif;font-size:44px;font-weight:600;color:#1B1A22">Meet Glo →</p>
+<div class="foot"><p class="ft">Misfits · Wearable proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="cover" style="justify-content:center;padding:128px" data-transition="fade">
+<img class="bg" src="assets/stars.jpg" alt="">
+<img class="float" src="assets/calm.webp" alt="The pet: a lilac cat-like character in a charcoal hoodie, floating, smirking, its curled tail glowing pink" style="position:absolute;left:1010px;top:40px;width:833px;height:1000px;--i:2">
+<div style="width:900px;display:flex;flex-direction:column">
+<p class="eyebrow in" style="--i:0">Misfits · Proposal</p>
+<div class="popin" style="--i:1;position:relative;width:760px;height:443px;margin-left:-92px;margin-top:-30px;margin-bottom:-24px"><img src="assets/logo2.webp" alt="The Glo logo: an off-white G and l, and a glowing pink o with a small tail flick" style="width:760px;height:443px"><h1 style="position:absolute;left:92px;top:110px;width:600px;font-size:200px;line-height:1;color:transparent">Glo</h1></div>
+<p class="in" style="--i:2;margin-top:28px;font-family:'Sora',Verdana,sans-serif;font-size:56px;line-height:1.12;font-weight:600;letter-spacing:-1px;width:720px">The pet that wants you to have fun</p>
+<p class="lead in" style="--i:2;margin-top:28px;width:780px">It shows your real-world social self, out loud.</p>
+<p class="tag in" style="--i:3;margin-top:44px">Visible · Expressive · Wear it and forget it</p>
+</div>
+
+</section>
+
+<section hidden id="thesis">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">What we’re building</p>
+<h2 class="in" style="--i:1;width:1280px">A device that shows your real-world social self, out loud</h2>
+<div class="cols">
+<div class="col in" style="--i:1"><div class="art" style="height:280px"><img src="assets/calm.webp" alt="The pet, calm and cool" style="width:233px;height:280px"></div><h3>Visible</h3><p class="body">Worn where people see it, so it’s brag-able by default. It shows the life you actually live.</p></div>
+<div class="col in" style="--i:2"><div class="art" style="height:280px"><img src="assets/bump.webp" alt="Glo, still smirking, bumping fists with a friend in a burst of light" style="width:424px;height:280px"></div><h3>Expressive</h3><p class="body">It reacts in the moment, louder than you would. A better way to show your real self than a feed.</p></div>
+<div class="col in" style="--i:3"><div class="art" style="height:280px"><img src="assets/rest.webp" alt="The pet asleep, curled up in mid-air" style="width:237px;height:280px"></div><h3>Wear it and forget it</h3><p class="body">Put it on and live your life. It listens and keeps track on its own; everything else is optional.</p></div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="why">
+<img class="bg" src="assets/stars.jpg" alt="">
+<div style="flex:1;display:flex;align-items:center;justify-content:space-between;gap:64px">
+<div style="width:940px;display:flex;flex-direction:column">
+<p class="eyebrow in" style="--i:0">Why</p>
+<h2 class="in" style="--i:1">We feel more than we show</h2>
+<div class="item in" style="--i:2;margin-top:44px"><p class="num">01</p><div class="ix"><h3>Stickers already do our feeling for us</h3><p class="body">Friends send a blushing cat sticker instead of typing how they feel. The pet is that sticker, live, in the room.</p></div></div>
+<div class="item in" style="--i:3"><p class="num">02</p><div class="ix"><h3>Tamagotchi, flipped</h3><p class="body">Tamagotchi kept you at home looking after it. This pet only grows when you go out.</p></div></div>
+</div>
+<img class="popin" src="assets/blush.webp" alt="The pet blushing and flustered, pink hearts around it, its tail glowing hot pink" style="width:620px;height:700px;--i:2">
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="custom">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">Make it your own</p>
+<h2 class="in" style="--i:1">Yours, down to the last whisker</h2>
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px">
+<div class="in" style="--i:1;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="assets/calm.webp" alt="Glo: lilac fur, pink spiky hair, charcoal hoodie" style="width:317px;height:380px"><p class="tag">Lilac · pink spikes</p></div>
+<div class="in" style="--i:2;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="assets/v-mint.webp" alt="A mint version with an indigo fringe and a cream hoodie" style="width:279px;height:380px"><p class="tag">Mint · indigo fringe</p></div>
+<div class="in" style="--i:2;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="assets/v-peach.webp" alt="A peach version with an orange curl and a sky-blue hoodie" style="width:261px;height:380px"><p class="tag">Peach · orange curl</p></div>
+<div class="in" style="--i:3;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="assets/v-sky.webp" alt="A sky-blue version with a white quiff and a mustard hoodie" style="width:271px;height:380px"><p class="tag">Sky · white quiff</p></div>
+<div class="in" style="--i:3;display:flex;flex-direction:column;align-items:center;gap:10px"><img src="assets/v-green.webp" alt="A leaf-green version with a green mohawk and a green hoodie" style="width:325px;height:380px"><p class="tag">Leaf · green mohawk</p></div>
+</div>
+<div class="in" style="--i:3;display:flex;flex-wrap:wrap;gap:14px;margin-top:36px">
+<p class="glass" style="font-size:24px;padding:10px 22px;border-radius:30px;color:#F6F1EA">Fur colour</p>
+<p class="glass" style="font-size:24px;padding:10px 22px;border-radius:30px;color:#F6F1EA">Hair style and colour</p>
+<p class="glass" style="font-size:24px;padding:10px 22px;border-radius:30px;color:#F6F1EA">Eye shape and colour</p>
+<p class="glass" style="font-size:24px;padding:10px 22px;border-radius:30px;color:#F6F1EA">Body type</p>
+<p class="glass" style="font-size:24px;padding:10px 22px;border-radius:30px;color:#F6F1EA">Outfit</p>
+<p class="glass" style="font-size:24px;padding:10px 22px;border-radius:30px;color:#FFC83D">Gear, earned by going out</p>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="configure">
+<img class="bg" src="assets/stars.jpg" alt="">
+<div style="flex:1;display:flex;align-items:center;gap:96px">
+<video class="popin" src="assets/glo-customiser.mp4" poster="assets/glo-customiser-still.jpg" muted loop playsinline preload="auto" aria-label="The Glo app on a phone: tapping colour swatches changes Glo from lilac to mint to peach, then equipping an unlocked jersey; the charm beside the phone updates a beat after each tap" style="width:655px;height:740px;border-radius:28px;--i:1;object-fit:cover;display:block"></video>
+<div style="flex:1;display:flex;flex-direction:column;min-width:0">
+<p class="eyebrow in" style="--i:0">From your phone</p>
+<h2 class="in" style="--i:1">Style it on your phone. See it on Glo.</h2>
+<div class="item in" style="--i:2;margin-top:44px"><p class="num">1</p><div class="ix"><h3 style="font-size:32px">Pick a look</h3><p class="body">Fur, hair and eyes, set in the app in a few taps.</p></div></div>
+<div class="item in" style="--i:2"><p class="num">2</p><div class="ix"><h3 style="font-size:32px">Equip what you’ve earned</h3><p class="body">Gear unlocks by going out, like a jersey for four Sundays of football.</p></div></div>
+<div class="item in" style="--i:3"><p class="num">3</p><div class="ix"><h3 style="font-size:32px">It shows up on the charm</h3><p class="body">Every change lands on the keychain a moment later.</p></div></div>
+</div>
+</div>
+<div class="foot"><p class="ft">Illustrative demo · Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="states">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">It reads the room</p>
+<h2 class="in" style="--i:1">Three states, one personality</h2>
+<div class="cols">
+<div class="col in" style="--i:1"><div class="art"><img src="assets/laugh2.webp" alt="Glo cracking up with laughter" style="width:313px;height:300px"></div><p class="tag">1 · In a hangout</p><h3>It emotes along</h3><p class="body">A plan is live and your people are around. It reacts to the moment.</p></div>
+<div class="col in" style="--i:2"><div class="art"><img src="assets/restless.webp" alt="The pet slumped sideways, bored, chin on its paw" style="width:371px;height:300px"></div><p class="tag">2 · Home alone</p><h3>It rests, or gets restless</h3><p class="body">After a busy week it sleeps. When it’s been too long, it nudges you out.</p></div>
+<div class="col in" style="--i:3"><div class="art"><img src="assets/bump.webp" alt="The pet bumping fists with a mint friend pet" style="width:455px;height:300px"></div><p class="tag">3 · Pets around</p><h3>It perks up</h3><p class="body">No plan, but friends are nearby. It spots them and says hi.</p></div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="emotes">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">In a hangout</p>
+<h2 class="in" style="--i:1">It over-reacts, so you don’t have to</h2>
+<div class="cols">
+<div class="col in" style="--i:1"><div class="art" style="height:320px"><img src="assets/blush.webp" alt="The pet blushing, hearts around it" style="width:283px;height:320px"></div><p class="tag">On a date</p><h3>Blushes all evening</h3><div class="tail"><span class="dot" style="background:#FF2EA6;box-shadow:0 0 14px #FF2EA6"></span><p class="tl">Stays private unless you share.</p></div></div>
+<div class="col in" style="--i:2"><div class="art" style="height:320px"><img src="assets/cricket2.webp" alt="Glo in a jersey, smug grin, fist up and pointing, tail blazing bright pink" style="width:330px;height:320px"></div><p class="tag">Cricket with friends</p><h3>Game face, every boundary</h3><div class="tail"><span class="dot" style="background:#FFD6F0;box-shadow:0 0 16px #FF8FD0"></span><p class="tl">Score and MVP go to the Hangout.</p></div></div>
+<div class="col in" style="--i:3"><div class="art" style="height:320px"><img src="assets/laugh2.webp" alt="Glo cracking up with laughter beside a candlelit table, tail glowing bright pink" style="width:334px;height:320px"></div><p class="tag">Dinner with the crew</p><h3>Cracks up with the table</h3><div class="tail"><span class="dot" style="background:#FFD6F0;box-shadow:0 0 16px #FF8FD0"></span><p class="tl">Best moments go in the recap.</p></div></div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="context">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">Our edge</p>
+<h2 class="in" style="--i:1">It knows the moment because Misfits knows the plan</h2>
+<div style="position:relative;width:1664px;height:500px;margin-top:40px"><svg width="1664" height="500" style="position:absolute;left:0;top:0;overflow:visible" aria-hidden="true"><line x1="520" y1="70" x2="660" y2="210" stroke="#FF8FD0" stroke-width="3" marker-end="url(#ah0)"/><defs><marker id="ah0" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#FF8FD0"/></marker></defs><line x1="520" y1="242" x2="652" y2="250" stroke="#FF8FD0" stroke-width="3" marker-end="url(#ah1)"/><defs><marker id="ah1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#FF8FD0"/></marker></defs><line x1="520" y1="414" x2="660" y2="300" stroke="#FF8FD0" stroke-width="3" marker-end="url(#ah2)"/><defs><marker id="ah2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#FF8FD0"/></marker></defs><line x1="1040" y1="250" x2="1144" y2="250" stroke="#FFC83D" stroke-width="3" marker-end="url(#ah3)"/><defs><marker id="ah3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#FFC83D"/></marker></defs></svg>
+<div class="glass in" style="position:absolute;left:0px;top:0px;width:520px;box-sizing:border-box;padding:26px 30px;gap:6px;--i:1"><h3 style="font-size:30px">Your Misfits plans</h3><p class="body">Who, where, and what kind of hangout.</p></div>
+<div class="glass in" style="position:absolute;left:0px;top:172px;width:520px;box-sizing:border-box;padding:26px 30px;gap:6px;--i:2"><h3 style="font-size:30px">Pets nearby</h3><p class="body">Which friends are actually here.</p></div>
+<div class="glass in" style="position:absolute;left:0px;top:344px;width:520px;box-sizing:border-box;padding:26px 30px;gap:6px;--i:3"><h3 style="font-size:30px">The room’s energy</h3><p class="body">Laughter and buzz. No audio kept.</p></div>
+<img class="popin" src="assets/calm.webp" alt="The pet, at the centre, combining the three signals" style="position:absolute;left:640px;top:0px;width:417px;height:500px;--i:2">
+<div class="glass in" style="position:absolute;left:1144px;top:160px;width:520px;box-sizing:border-box;padding:26px 30px;gap:6px;--i:3"><h3 style="font-size:30px">The right reaction</h3><p class="body">In the moment, and saved for the recap.</p></div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="grows">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">The care loop</p>
+<h2 class="in" style="--i:1">Go out, and it grows into you</h2>
+<div class="cols">
+<div class="col in" style="--i:1"><div class="art" style="height:290px"><img src="assets/meal.webp" alt="The pet and a friend sharing a rice ball" style="width:428px;height:290px"></div><p class="tag">Hangouts feed it</p><h3>30 minutes together is a meal</h3><p class="body">Streaks only go up when you actually meet.</p></div>
+<div class="col in" style="--i:2"><div class="art" style="height:290px"><img src="assets/explorer.webp" alt="The pet as an explorer with a jersey, headphones, a football and a map" style="width:275px;height:290px"></div><p class="tag">It becomes you</p><h3>Your life, worn as gear</h3><p class="body">Football every Sunday, gigs, new cities: it ends up wearing all of it.</p></div>
+<div class="col in" style="--i:3"><div class="art" style="height:290px"><img src="assets/crowd.webp" alt="The pet cheering among a crowd of colourful pets" style="width:517px;height:280px"></div><p class="tag">Status you can show</p><h3>Stamps and rare gear</h3><p class="body">Earned at clubs, venues and events. Clubs get a reason to want it worn.</p></div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="runs">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">It runs your social life</p>
+<h2 class="in" style="--i:1">Hold to talk. It handles the rest.</h2>
+<div class="cols">
+<div class="col glass in" style="--i:1"><p class="tag">Plan with your people</p><p class="quote">“Make a plan with these people.”</p><p class="body">Drafts it from Misfits events and venues, invites everyone and tracks the RSVPs.</p></div>
+<div class="col glass in" style="--i:2"><p class="tag">Find new people</p><p class="quote">“Find me people to go to the mall with.”</p><p class="body">Matches you on Misfits and sends the chat link to your phone.</p></div>
+<div class="col glass in" style="--i:3"><p class="tag">At the hangout</p><p class="quote">“Start a game.”</p><p class="body">Hosts the table, takes the group photo, then writes the recap and the score.</p></div>
+</div>
+<p class="lead in" style="--i:3;margin-top:48px">Built on the Misfits concierge, which already drafts plans and sends invites.</p>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="pets">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">Pet to pet</p>
+<h2 class="in" style="--i:1">Bump, poke, press</h2>
+<div class="cols">
+<div class="col in" style="--i:1"><div class="art"><img src="assets/bump.webp" alt="Two pets bumping fists with a burst of light" style="width:455px;height:300px"></div><p class="tag">Bump</p><h3>Bump to add a friend</h3><p class="body">Tap together and you’re friends on Misfits. Both pets celebrate.</p></div>
+<div class="col in" style="--i:2"><div class="art"><img src="assets/poke.webp" alt="The pet jumping in surprise after a poke" style="width:288px;height:300px"></div><p class="tag">Poke</p><h3>Poke a friend</h3><p class="body">It lands on their pet wherever they are, and it jumps.</p></div>
+<div class="col in" style="--i:3"><div class="art"><img src="assets/invite.webp" alt="The pet sending three glowing invites to friend pets" style="width:517px;height:280px"></div><p class="tag">Press</p><h3>Press to say “who’s free?”</h3><p class="body">Your three closest friends’ Glos light up. Anyone who presses back is in, and Misfits opens the chat.</p></div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="trust">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">Trust by design</p>
+<h2 class="in" style="--i:1">Listening only works if everyone trusts it</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:48px">
+<div class="glass in" style="--i:1"><h3>No raw audio is kept</h3><p class="body">Sound becomes a mood score on the device. Recordings are never stored or sent.</p></div>
+<div class="glass in" style="--i:2"><h3>Hold to talk</h3><p class="body">It only takes requests while you hold the button.</p></div>
+<div class="glass in" style="--i:2"><h3>You can see when it listens</h3><p class="body">Its glow changes whenever the mic is on, so everyone nearby can tell.</p></div>
+<div class="glass in" style="--i:3"><h3>One gesture to mute</h3><p class="body">For the moments that should stay private, like a first date going well.</p></div>
+</div>
+<p class="body in" style="--i:3;margin-top:32px">Recording and photo rules differ by country and state. Legal review comes before any pilot.</p>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="forms">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">The device · we recommend the charm</p>
+<h2 class="in" style="--i:1">Charm, locket or ring</h2>
+<div class="cols" style="margin-top:40px">
+<div class="col glass in" style="--i:1">
+<div style="height:170px;display:flex;justify-content:center;align-items:center"><div style="width:160px;height:160px;border-radius:80px;overflow:hidden;background:#0C0918;box-shadow:0 0 0 7px #2A2450,0 0 40px rgba(255,143,208,0.25)"><img src="assets/calm.webp" alt="The charm’s round screen showing the pet" style="width:160px;height:192px;object-fit:cover"></div></div>
+<p class="tag">Option A · Recommended</p><h3>Charm</h3><p class="body">Keychain or clip-on. The full pet on a round screen.</p>
+<p class="body"><span class="k">Watch out:</span> easy to leave behind.</p>
+</div>
+<div class="col glass in" style="--i:2">
+<div style="height:170px;position:relative;width:240px;align-self:center">
+<svg style="position:absolute;left:0px;top:0px;width:240px;height:60px" aria-label="A thin chain" width="240" height="60" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg"><path d="M20 0 Q60 30 112 26 M220 0 Q180 30 128 26" fill="none" stroke="#C3BBDF" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round"/><circle cx="120" cy="28" r="9" fill="none" stroke="#C3BBDF" stroke-width="4"/></svg>
+<div style="position:absolute;left:66px;top:46px;width:108px;height:108px;border-radius:54px;overflow:hidden;background:#0C0918;box-shadow:0 0 0 6px #2A2450,0 0 40px rgba(255,143,208,0.25)"><img src="assets/calm.webp" alt="The locket’s mini screen showing the pet" style="width:108px;height:130px;object-fit:cover"></div>
+</div>
+<p class="tag">Option B</p><h3>Locket</h3><p class="body">A pendant with a mini screen. Most visible, best spot for the mic.</p>
+<p class="body"><span class="k">Watch out:</span> tiny screen and battery.</p>
+</div>
+<div class="col glass in" style="--i:3">
+<div style="height:170px;display:flex;justify-content:center"><svg style="width:170px;height:170px" aria-label="A wristband with a glowing light strip" width="170" height="170" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="fb-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF2EA6"/><stop offset="0.5" stop-color="#FF8FD0"/><stop offset="1" stop-color="#FFC83D"/></linearGradient><filter id="fb-b" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="7"/></filter></defs>
+<ellipse cx="110" cy="100" rx="78" ry="36" fill="none" stroke="#241E44" stroke-width="22"/>
+<path d="M32 100 A78 36 0 0 0 188 100" fill="none" stroke="#3A3366" stroke-width="26" stroke-linecap="round"/>
+<path d="M46 116 A70 30 0 0 0 174 116" fill="none" stroke="url(#fb-g)" stroke-width="12" stroke-linecap="round" filter="url(#fb-b)" opacity="0.9"/>
+<path d="M46 116 A70 30 0 0 0 174 116" fill="none" stroke="url(#fb-g)" stroke-width="6" stroke-linecap="round"/>
+</svg></div>
+<p class="tag">Option C · Close second</p><h3>Ring or band</h3><p class="body">Ring first, wristband as a variant. The pet’s mood as colour and light.</p>
+<p class="body"><span class="k">Watch out:</span> no face, competes with watches.</p>
+</div>
+</div>
+<p class="lead in" style="--i:3;margin-top:40px">Same pet, same app, same sound receiver in all three.</p>
+<div class="foot"><p class="ft">Concept sketches · Glo</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="whynow">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">Why now, why us</p>
+<h2 class="in" style="--i:1">The category is waking up. We already have the brain.</h2>
+<div class="cols" style="margin-top:44px">
+<div class="col in" style="--i:1">
+<h3 style="margin-bottom:8px">Pocket companions are back</h3>
+<div class="item"><div class="ix"><p class="k" style="font-size:26px">Meta Muse Charm</p><p class="body">A keychain for a general AI agent. Shown Sept 2026.</p></div></div>
+<div class="item"><div class="ix"><p class="k" style="font-size:26px">Sweekar, Casio Moflin, Tamagotchi</p><p class="body">Cute companions with no idea what your social life is.</p></div></div>
+<div class="item"><div class="ix"><p class="k" style="font-size:26px">Bag charms</p><p class="body">The Labubu wave made the charm a fashion staple.</p></div></div>
+</div>
+<div class="col in" style="--i:2">
+<h3 style="margin-bottom:8px">What Misfits already has</h3>
+<div class="item"><div class="ix"><p class="k" style="font-size:26px">The concierge</p><p class="body">Drafts plans, sends invites, remembers people.</p></div></div>
+<div class="item"><div class="ix"><p class="k" style="font-size:26px">The social graph</p><p class="body">Clubs, events, venues and hangouts, already live.</p></div></div>
+<div class="item"><div class="ix"><p class="k" style="font-size:26px">The Hangout</p><p class="body">A shared home for recaps, scores and the next plan.</p></div></div>
+</div>
+</div>
+<div class="foot"><p class="ft">Sources: TechCrunch, Dezeen, Semafor, Engadget, TechRepublic (2025–26)</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="asks">
+<img class="bg" src="assets/stars.jpg" alt="">
+<p class="eyebrow in" style="--i:0">Plan and asks</p>
+<h2 class="in" style="--i:1">What we need today</h2>
+<div class="cols" style="margin-top:44px;gap:80px">
+<div class="col in" style="--i:1;flex:1.25">
+<div class="item"><p class="num">1</p><div class="ix"><h3 style="font-size:32px">Confirm the device</h3><p class="body">We recommend the charm, with the ring as a close second.</p></div></div>
+<div class="item"><p class="num">2</p><div class="ix"><h3 style="font-size:32px">Approve Phase 1</h3><p class="body">A working prototype of the chosen device, on a budget of [₹__].</p></div></div>
+<div class="item"><p class="num">3</p><div class="ix"><h3 style="font-size:32px">Legal review of listening</h3><p class="body">Consent and recording rules in our launch markets.</p></div></div>
+</div>
+<div class="col glass in" style="--i:2;align-self:flex-start;gap:22px">
+<p class="tag">The plan</p>
+<div class="tail"><span class="dot" style="background:#FFC83D;box-shadow:0 0 14px #FFC83D"></span><p class="tl"><span class="k">Phase 1 · [__ weeks]</span><br>Works-like prototype; the phone runs the AI.</p></div>
+<div class="tail"><span class="dot" style="background:#FF8FD0"></span><p class="tl"><span class="k">Phase 2 · [__ weeks]</span><br>Looks-like design, then a pilot with [__] users in Misfits clubs.</p></div>
+<div class="tail"><span class="dot" style="background:#4A4370"></span><p class="tl"><span class="k">Phase 3</span><br>Build decision: unit cost [₹__], price [₹__], partner.</p></div>
+</div>
+</div>
+<div class="foot"><p class="ft">Glo · Proposal</p><p class="ft pg"></p></div>
+
+</section>
+
+<section hidden id="close" style="padding:96px 128px;align-items:center;justify-content:center">
+<img class="bg" src="assets/stars.jpg" alt="">
+<img class="float" src="assets/calm.webp" alt="Glo floating, smirking, tail glowing pink" style="width:474px;height:569px;--i:0">
+<h1 class="in" style="--i:1;margin-top:16px;text-align:center">Go out. Glo grows.</h1>
+<p class="lead in" style="--i:2;margin-top:20px;text-align:center">Next: confirm the charm and approve Phase 1.</p>
+
+</section>
+
+</div></div>
+<div id="nav"><button id="prev" aria-label="Previous slide">‹</button><span id="count"></span><button id="next" aria-label="Next slide">›</button></div>
+<div id="rot">Turn your phone sideways for a bigger view</div>
+<div id="hint">Swipe, tap or use arrow keys</div>
+<script>
+(function(){
+var st=document.getElementById('stage'),sl=[].slice.call(st.querySelectorAll('section')),i=0,n=sl.length;
+sl.forEach(function(s,k){var p=s.querySelector('.foot .pg');if(p)p.textContent=k+1;});
+function fit(){var wr=document.getElementById('wrap'),w=wr.clientWidth,h=wr.clientHeight,sc=Math.min(w/1920,h/1080);st.style.transform='translate('+((w-1920*sc)/2)+'px,'+((h-1080*sc)/2)+'px) scale('+sc+')';}
+function show(k){k=Math.max(0,Math.min(n-1,k));sl.forEach(function(s,j){s.hidden=j!==k;var v=s.querySelectorAll('video');for(var q=0;q<v.length;q++){if(j===k){try{v[q].currentTime=0;var pr=v[q].play();if(pr&&pr.catch)pr.catch(function(){});}catch(e){}}else{v[q].pause();}}});i=k;document.getElementById('count').textContent=(k+1)+' / '+n;try{history.replaceState(null,'','#'+(k+1));}catch(e){}}
+document.getElementById('prev').onclick=function(e){e.stopPropagation();show(i-1)};
+document.getElementById('next').onclick=function(e){e.stopPropagation();show(i+1)};
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')show(i+1);if(e.key==='ArrowLeft'||e.key==='PageUp')show(i-1);});
+var x0=null;document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(dx<0?i+1:i-1);x0=null;},{passive:true});
+document.addEventListener('click',function(e){if(e.target.closest('#nav'))return;show(e.clientX>window.innerWidth/2?i+1:i-1);});
+window.addEventListener('resize',fit);fit();
+function fromHash(){var h=parseInt((location.hash||'#1').slice(1),10);if(!isNaN(h)&&h-1!==i)show(h-1);}window.addEventListener('hashchange',fromHash);i=-1;fromHash();if(i<0)show(0);
+setTimeout(function(){document.getElementById('hint').style.opacity=0},3500);
+})();
+</script>
+</body></html>
